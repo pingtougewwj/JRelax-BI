@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zh_CN">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+    <title>浏览报表 - $!biReport.name</title>
+    #required_css
+</head>
+<body>#loading
+
+<div class="app $!layout">
+    <!-- 头部菜单 -->#header
+    <section class="layout">
+        <!-- 菜单 -->#sidebar
+        <!-- 内容主体 -->
+        <section class="container">
+            <section class="main-content">
+                <!-- 主体操作栏 -->
+                <!--<header class="header navbar shadow">-->
+                <!--&lt;!&ndash; 左按钮区 &ndash;&gt;-->
+                <!--<div class="toolbar">-->
+                <!--<button class="btn btn-default toolbar-item" onclick="render()">重新渲染</button>-->
+                <!--</div>-->
+                <!--</header>-->
+                <div class="content-wrap">
+                    <div class="wrapper bg-default">
+                        <div class="row">
+                            #if($!searchForm)
+                            <div class="col-lg-8 col-lg-offset-2">
+                                <div class="panel">
+                                    <div class="panel-body" id="searchForm">
+                                        $!searchForm.content
+                                    </div>
+                                    <div class="panel-footer text-center">
+                                        <button class="btn btn-primary btn-form-submit" type="button" onclick="searchFun()">立即搜索</button>
+                                        <button class="btn btn-default btn-form-submit" type="button" onclick="resetFun()">重置</button>
+                                    </div>
+                                </div>
+                            </div>
+                            #end
+                            <div class="col-lg-8 col-lg-offset-2">
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        $!biReport.content
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="exit-offscreen"></a>
+            </section>
+        </section>
+    </section>
+</div>
+#required_js
+<script src="$!basePath/app/datasource/datasource.js"></script>
+<script src="$!basePath/app/report/bi.table.js"></script>
+<script src="$!basePath/app/report/bi.report.js?v=1.1"></script>
+<script src="$!basePath/app/report/bi.report.formula.js"></script>
+<script type="text/javascript">
+    function searchFun(){
+        var searchForm = $("#searchForm form");
+        searchForm.submit();
+    }
+    function resetFun(){
+        var searchForm = $("#searchForm form");
+        searchForm[0].reset();
+        render();
+    }
+    function render(params) {
+        var id = "$!biReport.id";
+        var report = new BiReport({
+            target: $("#" + id)
+        });
+        report.render(params);
+//        report.renderFormual();
+    }
+
+    ns.ready(function () {
+        render();
+
+        var searchForm = $("#searchForm form");
+        searchForm.attr("onsubmit", null);
+        searchForm.find("input:hidden").remove();
+        searchForm.on("submit", function () {
+            console.log(ns.form.serialize(searchForm));
+            render(ns.form.serialize(searchForm));
+            return false;
+        });
+    });
+</script>
+#loading_close
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.2.xsd ">
+    <import resource="classpath:service-context.xml" />
+    <!-- Activiti工作流配置 -->
+    <bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
+        <property name="dataSource" ref="multiDataSource"/><!-- 数据源 -->
+        <property name="transactionManager" ref="transactionManager"/><!-- 事务 -->
+        <property name="databaseSchemaUpdate" value="true"/><!-- 维护数据库流程相关表 -->
+        <property name="jobExecutorActivate" value="false"/><!-- 关闭任务管理器 -->
+        <property name="activityFontName" value="Microsoft Yahei"/><!-- 解决中文字体乱码 -->
+        <property name="labelFontName" value="Microsoft Yahei"/><!-- 解决中文字体乱码 -->
+        <property name="customSessionFactories"><!-- 自定义用户结构 -->
+            <list>
+                <bean class="com.jrelax.third.activiti.CustomGroupEntityManagerFactory"/>
+                <bean class="com.jrelax.third.activiti.CustomUserEntityManagerFactory"/>
+            </list>
+        </property>
+    </bean>
+    <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+        <property name="processEngineConfiguration" ref="processEngineConfiguration"/>
+    </bean>
+    <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService"/>
+    <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService"/>
+    <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService"/>
+    <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService"/>
+    <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService"/>
+    <bean id="formService" factory-bean="processEngine" factory-method="getFormService"/>
+    <bean id="identityService" factory-bean="processEngine" factory-method="getIdentityService" />
+    <!-- Activiti工作流配置 end -->
+    <!-- 单例json对象 -->
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
+    <!-- 集成REST服务需要的bean -->
+    <bean id="restResponseFactory" class="org.activiti.rest.service.api.RestResponseFactory" />
+    <bean id="contentTypeResolver" class="org.activiti.rest.common.application.DefaultContentTypeResolver" />
+</beans>
